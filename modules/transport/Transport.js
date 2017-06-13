@@ -81,6 +81,7 @@ export default class Transport {
         if (message.type === MESSAGE_TYPE_RESPONSE) {
             const handler = this._responseHandlers.get(message.id);
 
+            console.debug(message);
             if (handler) {
                 handler(message);
                 this._responseHandlers.delete(message.id);
@@ -233,9 +234,11 @@ export default class Transport {
 
         return new Promise((resolve, reject) => {
             this._responseHandlers.set(id, ({ error, result }) => {
-                if (result) {
+                if (typeof result !== 'undefined') {
                     resolve(result);
-                } else if (error) {
+
+                // eslint-disable-next-line no-negated-condition
+                } else if (typeof error !== 'undefined') {
                     reject(error);
                 } else { // no response
                     reject(new Error('Unexpected response format!'));
